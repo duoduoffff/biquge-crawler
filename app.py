@@ -61,7 +61,7 @@ def crawlAllChapters(novelId):
     baseDir = "novels"
     novelName = getNovelName(novelId)
     print("Novel name: {0}".format(novelName))
-    os.mkdir(novelName)
+    os.mkdir("{0}/{1}".format(baseDir, novelName))
     allChapters = getNovelChapterList(novelId)
     for item in allChapters:
         print("Writing {0}".format(item["chapterName"]))
