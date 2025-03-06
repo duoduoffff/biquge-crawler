@@ -26,6 +26,7 @@
     - author -> 作者名
     - authorEmail -> 作者邮箱
     - splitChapterList -> 布尔值，设为真表明该网站当中小说的章节名称分散在多页，需要分页获取
+    - splitContentList -> 布尔值，设为真表明该网站当中小说的每章正文分散在多页，需要分页获取
     - mobileLayout -> 布尔值，声明网站是否为移动视图，这个声明现阶段暂时不生效的
 - getChaptersOnPage(html) -> 用于获取网页中的章节列表。
     - 传入的参数是 bs4 的网页对象。
@@ -42,6 +43,14 @@
         其中，数组中的第一个是当前分页和所有分页信息，即便只有一页，也必须带上此元素，否则会导致拼接错误！
 - getChapterCtt(html) -> 从网页中取得章节正文。
     - 传入的参数是 bs4 的网页对象。
+    - 必须以字典的形式传回以下的项：
+        ```json
+        {"content": contentStr,
+            "unfinished": unfinished,
+            "nextpage": nextChapterUrl
+        }
+        ```
+        其中， unfinished 为布尔值，在你写的插件中，必须在元数据中声明被爬取的网站是否会分多页显示章节中的正文内容，以及，必须在传回的项中以布尔值表明后面还有没有正文页，并获取下一页的绝对地址（URL）放入该字典中方便系统处理。
 - getNovelName(html) -> 从网页中取得小说名称。
     - 传入的参数是 bs4 的网页对象。
 - compat() -> 返回部分变量和 url 模板
