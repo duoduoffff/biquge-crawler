@@ -3,6 +3,14 @@
 
 import bs4
 
+import sys
+sys.path.append("..")
+from Utility import network
+"""
+req = network.prepareGenericRequest("https://www.example.com", {}, network.headers, "GET")
+print(req.status_code)
+"""
+
 def metadata():
     name = "一点斑竹移动视图适配"
     compatDomain = "m.diyibanzhu.buzz"
@@ -10,6 +18,7 @@ def metadata():
     author = "notRachel"
     authorEmail = "florescence_hi@aliyun.com"
     splitChapterList = True # Whether the website shows chapter-indexes of a novel in multiple pages
+    splitContentList = True # Whether the website shows chapter content in multiple pages
     mobileLayout = True # This spec is now only for statistical purposes
 
     return {"name": name,
@@ -69,14 +78,32 @@ def getChaptersOnPage(html):
 
 def getChapterCtt(html):
     # https://m.diyibanzhu.buzz/34/34844/1914887.html
+    urlBase = "{0}://{1}".format(metadata()["protocol"], metadata()["compatDomain"])
     ctt = html.select("#novelcontent")[0].contents
+    nextChapter = html.select(".novelbutton")[0].select("li")[-1].select("p")[0].find("a")
+    nextChapterFlag = nextChapter.text
+    nextChapterUrl = nextChapter.get("href")
+    nextChapterUrl = "{0}{1}".format(urlBase, nextChapterUrl)
+    if(nextChapterFlag == "下一页"):
+        unfinished = True
+    elif(nextChapterFlag == "下一章"):
+        unfinished = False
+    else:
+        raise Exception("nextChapterFlag validation failed!")
+    # print(nextChapterFlag)
     content = []
     for c in ctt:
         if(isinstance(c, bs4.element.NavigableString)):
-            c = c.stripped_strings
-            content.extend(c)
+            c = list(c.stripped_strings)
+            if (len(c)>0):
+                content.extend(c)
+    if unfinished:
+        content = content[:-1]
     contentStr = "\n".join(content)
-    return contentStr
+    return {"content": contentStr,
+            "unfinished": unfinished,
+            "nextpage": nextChapterUrl
+            }
 
 def getNovelName(html):
     name = html.select(".cataloginfo")[0].select("h3")[0].text

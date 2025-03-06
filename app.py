@@ -106,7 +106,13 @@ class Busin:
     def getSingleChapter(singleChapterUrl):
         webDoctHtml = Busin.genericGet(singleChapterUrl)
         if webDoctHtml is not False:
-            return compat.getChapterCtt(webDoctHtml)
+            d = compat.getChapterCtt(webDoctHtml)
+            content = d["content"]
+            unfinished = d["unfinished"]
+            if unfinished:
+                f = Busin.getSingleChapter(d["nextpage"])
+                content += f
+            return content
         else:
             return False
 
