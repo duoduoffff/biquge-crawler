@@ -3,14 +3,6 @@
 
 import bs4
 
-import sys
-sys.path.append("..")
-from Utility import network
-"""
-req = network.prepareGenericRequest("https://www.example.com", {}, network.headers, "GET")
-print(req.status_code)
-"""
-
 def metadata():
     name = "一点斑竹移动视图适配"
     compatDomain = "m.diyibanzhu.buzz"
