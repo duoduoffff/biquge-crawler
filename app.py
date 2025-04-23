@@ -1,6 +1,10 @@
 #! /usr/bin/python3
 
 import json, re, os
+import argparse
+from urllib.parse import urlparse
+import mimetypes
+
 from bs4 import BeautifulSoup
 
 from Utility import file, network
@@ -53,17 +57,32 @@ urlBase = input("Input urlBase here - https://")
 urlBase = "https://{0}".format(urlBase)
 compat = applyCompat(urlBase)
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--cookie", help="Pass in cookies as string in case some sb websites want your session")
+args = parser.parse_args()
+
 class Busin:
-    def genericGet(webDoctUrl):
+    def genericGet(webDoctUrl, ck=args.cookie):
         headers = network.headers
+        if compat.metadata()["requireSession"] and isinstance(ck, str) and len(ck)>0:
+            headers["Cookie"] = ck
+
         webDoctPld = network.prepareGenericRequest(webDoctUrl, {}, headers, "GET")
 
         if(webDoctPld.status_code == 200):
             webDoct = webDoctPld.text
+            cttType = webDoctPld.headers.get("content-type").split(";")[0]
 
-            webDoctHtml = BeautifulSoup(webDoct, "html.parser")
-
-            return webDoctHtml
+            match cttType:
+                case "application/json":
+                    webDoctResult = json.loads(webDoct)
+                case "text/html":
+                    webDoctResult = BeautifulSoup(webDoct, "html.parser")
+                case "application/xml":
+                    webDoctResult = BeautifulSoup(webDoct, "xml")
+                case _:
+                    webDoctResult = webDoct
+            return webDoctResult
         else:
             print("Web request has errored, server says: {0} ({1})".format(webDoctPld.reason, webDoctPld.status_code))
             return False
@@ -132,6 +151,9 @@ class Busin:
 
 class CI:
     def main():
+        if compat.metadata()["requireSession"] and not args.cookie:
+            raise Exception("The website requires that you log in. Pass in a -c parameter.")
+
         novelId = input("Enter novel ID you'd like to download: ")
         if not novelId.isdigit():
             raise Exception("Failed to validate novel ID, generally an integer is required.")
