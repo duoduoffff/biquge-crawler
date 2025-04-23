@@ -12,6 +12,7 @@ def metadata():
     splitChapterList = True # Whether the website shows chapter-indexes of a novel in multiple pages
     splitContentList = True # Whether the website shows chapter content in multiple pages
     mobileLayout = True # This spec is now only for statistical purposes
+    requireSession = False # Whether the website requires session cookies to download
 
     return {"name": name,
             "compatDomain": compatDomain,
@@ -19,7 +20,8 @@ def metadata():
             "authorEmail": authorEmail,
             "protocol": protocol,
             "splitChapterList": splitChapterList,
-            "mobileLayout": mobileLayout
+            "mobileLayout": mobileLayout,
+            "requireSession": requireSession,
             }
 
 def cutNovelIdImpl(novelId):
