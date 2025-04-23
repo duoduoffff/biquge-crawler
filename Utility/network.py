@@ -8,7 +8,7 @@ import re, json
 from . import file
 
 headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:94.0) Gecko/20100101 Firefox/94.0',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0',
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Accept-Language': 'zh,zh-CN;q=0.7,en-US;q=0.3',
         # 'Referer': rqConfig.rqEndpointUrl,
@@ -24,7 +24,6 @@ headers = {
     }
 
 def prepareGenericRequest(urlRoute, urlParams, headers, method, sensitive=True):
-    
     webRequest = Request(method, urlRoute, params=urlParams, headers=headers)
     session = Session()
     sess = session.prepare_request(webRequest)
